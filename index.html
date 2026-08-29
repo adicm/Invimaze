@@ -19,8 +19,6 @@
       height: 100vh;
       overflow: hidden;
     }
-
-    /* Glass Top Bar */
     #top-bar {
       display: flex;
       justify-content: space-between;
@@ -48,8 +46,6 @@
       border-color: rgba(166, 99, 247, 0.5);
       font-weight: bold;
     }
-
-    /* Glass UI Header */
     #ui {
       display: flex;
       justify-content: space-between;
@@ -79,9 +75,6 @@
       font-size: 13px;
       backdrop-filter: blur(8px);
     }
-    #ad-btn:active { transform: scale(0.96); }
-
-    /* Frosted Glass Puzzle Board */
     #canvas-container {
       position: relative;
       width: 340px;
@@ -100,7 +93,6 @@
       height: 100%;
       display: block;
     }
-
     #countdown-overlay {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -134,7 +126,7 @@
     }
     .modal.active { visibility: visible; opacity: 1; }
     .modal-box {
-      background: rgba(22, 27, 43, 0.78);
+      background: rgba(22, 27, 43, 0.88);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.18);
@@ -145,7 +137,6 @@
       text-align: center;
       box-shadow: 0 20px 45px rgba(0, 0, 0, 0.75), inset 0 1px 1px rgba(255, 255, 255, 0.25);
       position: relative;
-      overflow: hidden;
     }
     .modal-box h2 { font-size: 20px; margin-bottom: 12px; }
     .setting-item {
@@ -172,36 +163,7 @@
       width: 100%;
     }
     .danger-btn { background: #e63946; color: #fff; }
-    .danger-btn:active { background: #c72d39; }
     .warning-btn { background: #4a5568; color: #fff; }
-    .warning-btn:active { background: #374151; }
-
-    /* Victory Modal Styling */
-    .trophy-badge {
-      font-size: 55px;
-      animation: pulseGlow 1.8s infinite alternate ease-in-out;
-      margin-bottom: 6px;
-      display: inline-block;
-    }
-    @keyframes pulseGlow {
-      0% { transform: scale(1); filter: drop-shadow(0 0 10px #ffd700); }
-      100% { transform: scale(1.12); filter: drop-shadow(0 0 25px #ffaa00); }
-    }
-    .confetti-container {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .confetti {
-      position: absolute;
-      width: 8px; height: 12px; opacity: 0.85;
-      animation: fallDown 3s linear infinite;
-    }
-    @keyframes fallDown {
-      0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(320px) rotate(720deg); opacity: 0; }
-    }
   </style>
 </head>
 <body>
@@ -225,52 +187,6 @@
     <div id="countdown-overlay">3</div>
   </div>
 
-  <!-- Level 1 Tutorial -->
-  <div id="tutorial-modal" class="modal">
-    <div class="modal-box" style="border-color: rgba(58, 134, 255, 0.6);">
-      <h2 style="color: #3a86ff;">How to Play 💡</h2>
-      <p style="color: #cbd5e1; font-size: 13.5px; line-height: 1.5; margin: 12px 0; text-align: left;">
-        1. <b>Memorize:</b> Red walls appear during the 3-second countdown.<br><br>
-        2. <b>Invisible:</b> Walls vanish on <b>GO!</b><br><br>
-        3. <b>Navigate:</b> Swipe or use Arrow keys to reach the green portal safely.
-      </p>
-      <button class="modal-btn" style="background: #3a86ff; color: #fff;" onclick="closeTutorial()">Got it! Start Level 1</button>
-    </div>
-  </div>
-
-  <!-- Remove Ads Modal -->
-  <div id="remove-ads-modal" class="modal">
-    <div class="modal-box" style="border-color: rgba(131, 56, 236, 0.6);">
-      <h2 style="color: #a663f7;">🚫 Remove Ads</h2>
-      <p style="color: #cbd5e1; font-size: 13px; margin: 10px 0;">Unlock instant reveals forever with zero video ad interruptions via Google Play!</p>
-      <button class="modal-btn" style="background: #8338ec; color: #fff; margin-bottom: 8px;" onclick="processGooglePlayPurchase()">Unlock Ad-Free Experience</button>
-      <button class="modal-btn" style="background: rgba(255,255,255,0.12); color: #fff;" onclick="closeModal('remove-ads-modal')">Cancel</button>
-    </div>
-  </div>
-
-  <!-- Complete Level Modal -->
-  <div id="complete-modal" class="modal">
-    <div class="modal-box" style="border-color: rgba(0, 255, 85, 0.6);">
-      <h2 style="color: #00ff55;">Level Cleared! 🎉</h2>
-      <p style="color: #cbd5e1; font-size: 14px; margin-bottom: 16px;">Maze decoded successfully.</p>
-      <button class="modal-btn" onclick="nextLevel()">Next Level ➔</button>
-    </div>
-  </div>
-
-  <!-- Grand Victory Modal -->
-  <div id="victory-modal" class="modal">
-    <div class="modal-box" style="border-color: #ffd700; box-shadow: 0 0 35px rgba(255, 215, 0, 0.4);">
-      <div class="confetti-container" id="confetti-box"></div>
-      <div class="trophy-badge">🏆</div>
-      <h2 style="color: #ffd700; font-size: 22px; margin-bottom: 6px;">MAZE MASTER!</h2>
-      <p style="color: #ffffff; font-weight: bold; font-size: 15px; margin-bottom: 6px;">Congratulations!</p>
-      <p style="color: #cbd5e1; font-size: 13px; margin-bottom: 8px;">You conquered all 50 invisible maze levels with supreme memory and agility.</p>
-      <p style="color: #00ff55; font-size: 12.5px; font-weight: bold; margin-bottom: 16px;">🔄 Every run is procedurally generated! Hit Play Again to experience 50 brand-new unique mazes.</p>
-      <button class="modal-btn" style="background: linear-gradient(135deg, #ffd700, #ff9800); color: #000; font-weight: 800;" onclick="replayFromBeginning()">Play Fresh Mazes 🔄</button>
-      <button class="modal-btn" style="background: rgba(255,255,255,0.1); color: #fff;" onclick="openModal('support-modal'); closeModal('victory-modal');">❤️ Support & Rate</button>
-    </div>
-  </div>
-
   <!-- Settings Modal -->
   <div id="settings-modal" class="modal">
     <div class="modal-box">
@@ -289,153 +205,60 @@
           <div class="color-swatch" style="background: #00f0ff;" onclick="setPlayerColor('#00f0ff')"></div>
         </div>
       </div>
-      <button class="modal-btn danger-btn" onclick="confirmResetProgress()">🔄 Start from Beginning</button>
-      <button class="modal-btn warning-btn" onclick="confirmExitGame()">🚪 Exit Game</button>
+      <button class="modal-btn danger-btn" onclick="executeReset()">🔄 Start from Beginning</button>
+      <button class="modal-btn warning-btn" onclick="executeExit()">🚪 Exit Game</button>
       <button class="modal-btn" style="background: rgba(255,255,255,0.12); color: #fff;" onclick="closeModal('settings-modal')">Close</button>
     </div>
   </div>
 
-  <!-- Reset Confirmation Modal -->
-  <div id="reset-modal" class="modal">
-    <div class="modal-box" style="border-color: #e63946;">
-      <h2 style="color: #e63946;">Reset Progress?</h2>
-      <p style="color: #cbd5e1; font-size: 13px; margin: 12px 0;">This will reset your saved progress and generate a new layout starting at Level 1.</p>
-      <button class="modal-btn danger-btn" onclick="executeReset()">Yes, Reset</button>
-      <button class="modal-btn" style="background: rgba(255,255,255,0.12); color: #fff;" onclick="closeModal('reset-modal')">Cancel</button>
+  <!-- Remove Ads Modal -->
+  <div id="remove-ads-modal" class="modal">
+    <div class="modal-box" style="border-color: rgba(131, 56, 236, 0.6);">
+      <h2 style="color: #a663f7;">🚫 Remove Ads</h2>
+      <p style="color: #cbd5e1; font-size: 13px; margin: 10px 0;">Unlock instant reveals forever with zero video ad interruptions!</p>
+      <button class="modal-btn" style="background: #8338ec; color: #fff; margin-bottom: 8px;" onclick="grantAdFreeStatus()">Unlock Ad-Free Experience</button>
+      <button class="modal-btn" style="background: rgba(255,255,255,0.12); color: #fff;" onclick="closeModal('remove-ads-modal')">Cancel</button>
     </div>
   </div>
 
-  <!-- Exit Game Confirmation Modal -->
-  <div id="exit-modal" class="modal">
-    <div class="modal-box" style="border-color: #ff9800;">
-      <h2 style="color: #ff9800;">Exit Game?</h2>
-      <p style="color: #cbd5e1; font-size: 13px; margin: 12px 0;">Your level progress is automatically saved.</p>
-      <button class="modal-btn danger-btn" onclick="executeExit()">Close App</button>
-      <button class="modal-btn" style="background: rgba(255,255,255,0.12); color: #fff;" onclick="closeModal('exit-modal')">Cancel</button>
+  <!-- Complete Level Modal -->
+  <div id="complete-modal" class="modal">
+    <div class="modal-box" style="border-color: rgba(0, 255, 85, 0.6);">
+      <h2 style="color: #00ff55;">Level Cleared! 🎉</h2>
+      <p style="color: #cbd5e1; font-size: 14px; margin-bottom: 16px;">Maze decoded successfully.</p>
+      <button class="modal-btn" onclick="nextLevel()">Next Level ➔</button>
     </div>
   </div>
 
-  <!-- Support & Google Play Links Modal -->
+  <!-- Support Modal -->
   <div id="support-modal" class="modal">
     <div class="modal-box">
       <h2>❤️ Support & Links</h2>
-      <p style="color: #94a3b8; font-size: 13px; margin: 12px 0;">Enjoying Invi maZe? Rate us on Google Play or send us your feedback!</p>
-      <button class="modal-btn" style="background: #01875f; color: #fff; margin-bottom: 8px;" onclick="openExternalLink(CONFIG_LINKS.PLAYSTORE_URL, CONFIG_LINKS.EXPECTED_HASHES.PLAYSTORE_HASH)">⭐ Rate on Google Play</button>
-      <button class="modal-btn" style="background: #3a86ff; color: #fff; margin-bottom: 8px;" onclick="openExternalLink(CONFIG_LINKS.CONTACT_URL, CONFIG_LINKS.EXPECTED_HASHES.CONTACT_HASH)">✉️ Contact Support</button>
+      <p style="color: #94a3b8; font-size: 13px; margin: 12px 0;">Enjoying Invi maZe? Rate us or contact support below.</p>
+      <button class="modal-btn" style="background: #01875f; color: #fff; margin-bottom: 8px;" onclick="window.open(CONFIG_LINKS.PLAYSTORE_URL, '_blank')">⭐ Google Play Store</button>
+      <button class="modal-btn" style="background: #3a86ff; color: #fff; margin-bottom: 8px;" onclick="window.open(CONFIG_LINKS.CONTACT_URL, '_blank')">✉️ Contact Support</button>
       <button class="modal-btn" style="background: rgba(255,255,255,0.12); color: #fff;" onclick="closeModal('support-modal')">Close</button>
     </div>
   </div>
 
   <script>
-      // =========================================================================
-    // 🛡️ CONFIGURATION & ANTI-TAMPER INTEGRITY
-    // =========================================================================
-    const CONFIG_LINKS = Object.freeze({
+    const CONFIG_LINKS = {
       PLAYSTORE_URL: "https://play.google.com/store/apps/details?id=com.zxproductions.invimaze",
       CONTACT_URL: "mailto:Zxproductions.support@gmail.com",
-      GOOGLE_PLAY_PRODUCT_ID: "remove_ads_permanent",
-      AD_REVEAL_SECONDS: 3,
-      SECURITY_SALT: "MazePlayStoreSalt2026",
-      EXPECTED_HASHES: Object.freeze({
-        PLAYSTORE_HASH: null,
-        CONTACT_HASH: null
-      })
-    });
+      AD_REVEAL_SECONDS: 3
+    };
 
-    // In-Game Toast Notification (Replaces ugly browser alerts)
-    function showGameToast(message) {
+    function showGameToast(msg) {
       const existing = document.getElementById("game-toast");
       if (existing) existing.remove();
-
       const toast = document.createElement("div");
       toast.id = "game-toast";
-      toast.innerText = message;
-      toast.style = "position:fixed;top:60px;background:rgba(22,27,43,0.95);color:#fff;padding:10px 20px;border-radius:12px;font-size:13px;z-index:9999;border:1px solid rgba(255,255,255,0.25);backdrop-filter:blur(10px);box-shadow:0 8px 24px rgba(0,0,0,0.6);text-align:center;max-width:80vw;";
+      toast.innerText = msg;
+      toast.style = "position:fixed;bottom:24px;background:rgba(22,27,43,0.95);color:#fff;padding:8px 18px;border-radius:20px;font-size:13px;z-index:9999;border:1px solid rgba(255,255,255,0.25);box-shadow:0 6px 20px rgba(0,0,0,0.6);";
       document.body.appendChild(toast);
-
-      setTimeout(() => { toast.remove(); }, 2500);
+      setTimeout(() => { if (toast) toast.remove(); }, 2000);
     }
 
-    async function computeStringHash(text) {
-      const msgBuffer = new TextEncoder().encode(text.trim());
-      const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
-      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
-    }
-
-    async function openExternalLink(url, expectedHash) {
-      try {
-        if (!url || typeof url !== "string") return;
-        if (expectedHash && typeof expectedHash === "string" && expectedHash.length === 64) {
-          const currentHash = await computeStringHash(url);
-          if (currentHash !== expectedHash) {
-            showGameToast("⚠️ Security Alert: Link verification failed.");
-            return;
-          }
-        }
-        window.open(url, "_blank", "noopener,noreferrer");
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    async function verifyAdFreeIntegrity() {
-      const isAdFree = localStorage.getItem("maze_ad_free") === "true";
-      if (!isAdFree) return false;
-      const storedSig = localStorage.getItem("maze_ad_free_sig");
-      const expectedSig = await computeStringHash("AD_FREE_TRUE_" + CONFIG_LINKS.SECURITY_SALT);
-      if (storedSig !== expectedSig) {
-        localStorage.removeItem("maze_ad_free");
-        localStorage.removeItem("maze_ad_free_sig");
-        return false;
-      }
-      return true;
-    }
-
-    // =========================================================================
-    // 💳 GOOGLE PLAY BILLING / AD-FREE SYSTEM
-    // =========================================================================
-    async function processGooglePlayPurchase() {
-      try {
-        if ("getDigitalGoodsService" in window) {
-          const service = await window.getDigitalGoodsService("https://play.google.com/billing");
-          const paymentMethods = [{
-            supportedMethods: "https://play.google.com/billing",
-            data: { sku: CONFIG_LINKS.GOOGLE_PLAY_PRODUCT_ID }
-          }];
-          const paymentDetails = {
-            total: { label: "Remove Ads Permanently", amount: { currency: "USD", value: "0.99" } }
-          };
-
-          const request = new PaymentRequest(paymentMethods, paymentDetails);
-          const paymentResponse = await request.show();
-          const { purchaseToken } = paymentResponse.details;
-
-          await service.acknowledge(purchaseToken, "onetime");
-          await paymentResponse.complete("success");
-          await grantAdFreeStatus();
-        } else {
-          // Direct Unlock for Local / Testing Mode
-          await grantAdFreeStatus();
-        }
-      } catch (err) {
-        // Fallback for APK test installations outside the Play Store
-        await grantAdFreeStatus();
-      }
-    }
-
-    async function grantAdFreeStatus() {
-      const sig = await computeStringHash("AD_FREE_TRUE_" + CONFIG_LINKS.SECURITY_SALT);
-      localStorage.setItem("maze_ad_free", "true");
-      localStorage.setItem("maze_ad_free_sig", sig);
-      isAdFree = true;
-      closeModal("remove-ads-modal");
-      updateAdButtonUI();
-      showGameToast("🎉 Ads Removed! Instant reveals unlocked.");
-    }
-
-    // =========================================================================
-    // 🎮 PROCEDURAL GAME ENGINE & GLASS RENDERER
-    // =========================================================================
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
     const countdownEl = document.getElementById("countdown-overlay");
@@ -445,7 +268,7 @@
     let isLocked = true;
     let isLevelComplete = false;
     let hapticEnabled = true;
-    let isAdFree = false;
+    let isAdFree = localStorage.getItem("maze_ad_free") === "true";
     let playerColor = localStorage.getItem("maze_player_color") || "#3a86ff";
 
     let player = { x: 0, y: 0 };
@@ -460,7 +283,6 @@
     function createLevelData(lvlIndex) {
       const gSize = getGridSizeForLevel(lvlIndex);
       const grid = Array(gSize).fill(null).map(() => Array(gSize).fill(1));
-
       const corners = [
         { start: { x: 0, y: 0 }, goal: { x: gSize - 1, y: gSize - 1 } },
         { start: { x: gSize - 1, y: 0 }, goal: { x: 0, y: gSize - 1 } },
@@ -468,7 +290,6 @@
         { start: { x: gSize - 1, y: gSize - 1 }, goal: { x: 0, y: 0 } }
       ];
       const pair = corners[Math.floor(Math.random() * corners.length)];
-
       let cx = pair.start.x, cy = pair.start.y;
       grid[cy][cx] = 0;
 
@@ -494,15 +315,9 @@
       return { gridSize: gSize, map: grid, start: { ...pair.start }, goal: { ...pair.goal } };
     }
 
-    async function loadLevel(lvlIndex) {
-      if (lvlIndex >= 50) {
-        triggerGrandVictory();
-        return;
-      }
+    function loadLevel(lvlIndex) {
       currentLevel = lvlIndex;
       localStorage.setItem("maze_saved_level", currentLevel);
-
-      isAdFree = await verifyAdFreeIntegrity();
       updateAdButtonUI();
 
       currentLevelData = createLevelData(currentLevel);
@@ -512,24 +327,16 @@
       player = { ...currentLevelData.start };
       isLevelComplete = false;
       closeModal("complete-modal");
-      closeModal("victory-modal");
 
       document.getElementById("level-display").innerText = `Level ${currentLevel + 1} / 50`;
-
-      if (currentLevel === 0 && !localStorage.getItem("maze_tutorial_shown")) {
-        showWalls = true;
-        draw();
-        openModal("tutorial-modal");
-      } else {
-        startCountdownRoutine();
-      }
+      startCountdownRoutine();
     }
 
     function updateAdButtonUI() {
       const adBtn = document.getElementById("ad-btn");
       const removeAdsBtn = document.getElementById("remove-ads-btn");
       if (isAdFree) {
-        adBtn.innerText = "👁️ Instant Reveal";
+        adBtn.innerText = "👁️ Reveal";
         adBtn.style.background = "linear-gradient(135deg, rgba(46, 196, 182, 0.9), rgba(32, 150, 140, 0.8))";
         if (removeAdsBtn) removeAdsBtn.style.display = "none";
       } else {
@@ -539,62 +346,22 @@
       }
     }
 
-    function handleRevealAction() {
-      if (isAdFree) {
-        revealWallsDirectly();
-        return;
-      }
-
-      if (!navigator.onLine) {
-        showGameToast("⚠️ Connect to the internet or unlock 'No Ads'.");
-        return;
-      }
-
-      showGameToast("👁️ Walls Revealed (3s)!");
-      revealWallsDirectly();
+    function grantAdFreeStatus() {
+      localStorage.setItem("maze_ad_free", "true");
+      isAdFree = true;
+      closeModal("remove-ads-modal");
+      updateAdButtonUI();
+      showGameToast("🎉 Ads Removed! Instant reveals unlocked.");
     }
 
-    function revealWallsDirectly() {
+    function handleRevealAction() {
       showWalls = true;
       draw();
       setTimeout(() => {
         showWalls = false;
         draw();
       }, CONFIG_LINKS.AD_REVEAL_SECONDS * 1000);
-    }
-
-    function triggerGrandVictory() {
-      isLevelComplete = true;
-      playVictoryFanfare();
-      spawnConfetti();
-      openModal("victory-modal");
-    }
-
-    function spawnConfetti() {
-      const box = document.getElementById("confetti-box");
-      box.innerHTML = "";
-      const colors = ["#ffd700", "#00ff55", "#3a86ff", "#ff007f", "#00f0ff", "#ffbe0b"];
-      for (let i = 0; i < 35; i++) {
-        const conf = document.createElement("div");
-        conf.className = "confetti";
-        conf.style.left = Math.random() * 100 + "%";
-        conf.style.background = colors[Math.floor(Math.random() * colors.length)];
-        conf.style.animationDelay = (Math.random() * 2) + "s";
-        conf.style.animationDuration = (2 + Math.random() * 2) + "s";
-        box.appendChild(conf);
-      }
-    }
-
-    function replayFromBeginning() {
-      closeModal("victory-modal");
-      localStorage.removeItem("maze_saved_level");
-      loadLevel(0);
-    }
-
-    function closeTutorial() {
-      localStorage.setItem("maze_tutorial_shown", "true");
-      closeModal("tutorial-modal");
-      startCountdownRoutine();
+      showGameToast("👁️ Walls Revealed (3s)!");
     }
 
     function startCountdownRoutine() {
@@ -623,37 +390,19 @@
     }
 
     function nextLevel() {
-      loadLevel(currentLevel + 1);
-    }
-
-    function confirmResetProgress() {
-      closeModal("settings-modal");
-      openModal("reset-modal");
+      loadLevel((currentLevel + 1) % 50);
     }
 
     function executeReset() {
+      closeModal("settings-modal");
       localStorage.removeItem("maze_saved_level");
-      localStorage.removeItem("maze_tutorial_shown");
-      closeModal("reset-modal");
       loadLevel(0);
     }
 
-    function confirmExitGame() {
-      closeModal("settings-modal");
-      openModal("exit-modal");
-    }
-
-    // Complete App Exit
     function executeExit() {
-      closeModal("exit-modal");
-      if (navigator.app && navigator.app.exitApp) {
-        navigator.app.exitApp();
-      } else if (window.twa && window.twa.close) {
-        window.twa.close();
-      } else {
-        window.close();
-        window.location.href = "about:blank";
-      }
+      closeModal("settings-modal");
+      window.close();
+      history.back();
     }
 
     function movePlayer(dx, dy) {
@@ -668,9 +417,7 @@
 
       if (targetCell === 1) {
         playWallHitSound();
-        if (hapticEnabled && navigator.vibrate) {
-          navigator.vibrate([100, 50, 100]);
-        }
+        if (hapticEnabled && navigator.vibrate) navigator.vibrate([100, 50, 100]);
         player = { ...currentLevelData.start };
         draw();
         return;
@@ -684,11 +431,7 @@
         isLevelComplete = true;
         playGobbleSound();
         draw();
-        if (currentLevel === 49) {
-          setTimeout(triggerGrandVictory, 300);
-        } else {
-          openModal("complete-modal");
-        }
+        openModal("complete-modal");
       } else {
         draw();
       }
@@ -712,85 +455,36 @@
           ctx.strokeRect(px, py, currentTileSize, currentTileSize);
 
           if (map[r][c] === 1 && showWalls) {
-            const wallX = px + 2;
-            const wallY = py + 2;
-            const wallSize = currentTileSize - 4;
-
+            const wallX = px + 2, wallY = py + 2, wallSize = currentTileSize - 4;
             const wallGrad = ctx.createLinearGradient(wallX, wallY, wallX + wallSize, wallY + wallSize);
             wallGrad.addColorStop(0, "rgba(255, 60, 80, 0.85)");
             wallGrad.addColorStop(1, "rgba(180, 20, 40, 0.7)");
             ctx.fillStyle = wallGrad;
             ctx.fillRect(wallX, wallY, wallSize, wallSize);
-
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            ctx.moveTo(wallX, wallY + wallSize);
-            ctx.lineTo(wallX, wallY);
-            ctx.lineTo(wallX + wallSize, wallY);
-            ctx.stroke();
-
-            ctx.strokeStyle = "rgba(0, 0, 0, 0.4)";
-            ctx.beginPath();
-            ctx.moveTo(wallX + wallSize, wallY);
-            ctx.lineTo(wallX + wallSize, wallY + wallSize);
-            ctx.lineTo(wallX, wallY + wallSize);
-            ctx.stroke();
           } else if (map[r][c] === 2) {
-            const goalX = px + 3;
-            const goalY = py + 3;
-            const goalSize = currentTileSize - 6;
-
+            const goalX = px + 3, goalY = py + 3, goalSize = currentTileSize - 6;
             ctx.shadowColor = "#00ff55";
-            ctx.shadowBlur = 16;
-
-            const goalGrad = ctx.createRadialGradient(
-              goalX + goalSize / 2, goalY + goalSize / 2, 2,
-              goalX + goalSize / 2, goalY + goalSize / 2, goalSize / 2
-            );
-            goalGrad.addColorStop(0, "rgba(200, 255, 220, 0.95)");
-            goalGrad.addColorStop(1, "rgba(0, 255, 85, 0.85)");
-            ctx.fillStyle = goalGrad;
+            ctx.shadowBlur = 14;
+            ctx.fillStyle = "#00ff55";
             ctx.fillRect(goalX, goalY, goalSize, goalSize);
             ctx.shadowBlur = 0;
-
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(goalX, goalY, goalSize, goalSize);
           }
         }
       }
 
-      // Draw Glass Sphere Player
       const ballX = player.x * currentTileSize + currentTileSize / 2;
       const ballY = player.y * currentTileSize + currentTileSize / 2;
       const radius = currentTileSize / 3.2;
 
       ctx.shadowColor = playerColor;
-      ctx.shadowBlur = 14;
-
-      const ballGrad = ctx.createRadialGradient(
-        ballX - radius * 0.35, ballY - radius * 0.35, radius * 0.1,
-        ballX, ballY, radius
-      );
-      ballGrad.addColorStop(0, "#ffffff");
-      ballGrad.addColorStop(0.3, playerColor);
-      ballGrad.addColorStop(1, "#0a1128");
-
+      ctx.shadowBlur = 12;
       ctx.beginPath();
       ctx.arc(ballX, ballY, radius, 0, Math.PI * 2);
-      ctx.fillStyle = ballGrad;
+      ctx.fillStyle = playerColor;
       ctx.fill();
       ctx.shadowBlur = 0;
-
-      ctx.beginPath();
-      ctx.ellipse(ballX - radius * 0.3, ballY - radius * 0.35, radius * 0.35, radius * 0.18, -Math.PI / 4, 0, Math.PI * 2);
-      ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
-      ctx.fill();
-      ctx.closePath();
     }
 
-    // Input Controls
     window.addEventListener("keydown", (e) => {
       if (e.key === "ArrowUp" || e.key === "w") movePlayer(0, -1);
       if (e.key === "ArrowDown" || e.key === "s") movePlayer(0, 1);
@@ -825,13 +519,7 @@
       draw();
     }
 
-    // =========================================================================
-    // 🔊 AUDIO ENGINE
-    // =========================================================================
     let audioCtx = null;
-    let musicInterval = null;
-    let isMusicPlaying = false;
-
     function initAudioContext() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === "suspended") audioCtx.resume();
@@ -843,9 +531,7 @@
       const gain = audioCtx.createGain();
       osc.type = "sine";
       osc.frequency.setValueAtTime(320, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.05);
-      gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
+      gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start();
@@ -858,91 +544,41 @@
       const gain = audioCtx.createGain();
       osc.type = "sawtooth";
       osc.frequency.setValueAtTime(90, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    }
+
+    function playGobbleSound() {
+      initAudioContext();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start();
       osc.stop(audioCtx.currentTime + 0.2);
     }
 
-    function playGobbleSound() {
-      initAudioContext();
-      const notes = [260, 390, 520, 780];
-      notes.forEach((freq, idx) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.06);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime + idx * 0.06);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + idx * 0.06 + 0.2);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(audioCtx.currentTime + idx * 0.06);
-        osc.stop(audioCtx.currentTime + idx * 0.06 + 0.2);
-      });
-    }
-
-    function playVictoryFanfare() {
-      initAudioContext();
-      const fanfareNotes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
-      fanfareNotes.forEach((freq, idx) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.12);
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime + idx * 0.12);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + idx * 0.12 + 0.5);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(audioCtx.currentTime + idx * 0.12);
-        osc.stop(audioCtx.currentTime + idx * 0.12 + 0.5);
-      });
-    }
-
+    let musicInterval = null;
+    let isMusicPlaying = false;
     function toggleMusicButton() {
       initAudioContext();
       if (!isMusicPlaying) {
-        startSystemMusic();
+        isMusicPlaying = true;
         document.getElementById("music-toggle-btn").innerText = "🎵 BGM: ON";
       } else {
-        stopSystemMusic();
+        isMusicPlaying = false;
         document.getElementById("music-toggle-btn").innerText = "🎵 BGM: OFF";
       }
     }
 
-    function startSystemMusic() {
-      isMusicPlaying = true;
-      const notes = [220, 246.94, 261.63, 293.66, 329.63, 392.0];
-      let step = 0;
-
-      musicInterval = setInterval(() => {
-        if (!isMusicPlaying) return;
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "sine";
-        osc.frequency.setValueAtTime(notes[step % notes.length], audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.45);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.45);
-        step = (step + Math.floor(Math.random() * 3 + 1)) % notes.length;
-      }, 360);
-    }
-
-    function stopSystemMusic() {
-      isMusicPlaying = false;
-      clearInterval(musicInterval);
-    }
-
-    // =========================================================================
-    // 📱 ANDROID HARDWARE BACK BUTTON HANDLER
-    // =========================================================================
     history.pushState({ page: 1 }, null, "");
     let backPressedOnce = false;
-
     window.addEventListener("popstate", () => {
       const activeModal = document.querySelector(".modal.active");
       if (activeModal) {
@@ -950,27 +586,16 @@
         history.pushState({ page: 1 }, null, "");
         return;
       }
-
       if (!backPressedOnce) {
         backPressedOnce = true;
         showGameToast("Press back again to exit");
-
-        setTimeout(() => {
-          backPressedOnce = false;
-        }, 2000);
-
+        setTimeout(() => { backPressedOnce = false; }, 2000);
         history.pushState({ page: 1 }, null, "");
       } else {
-        if (navigator.app && navigator.app.exitApp) {
-          navigator.app.exitApp();
-        } else {
-          history.back();
-        }
+        history.back();
       }
     });
 
-    const savedLevel = parseInt(localStorage.getItem("maze_saved_level") || "0", 10);
-    loadLevel(savedLevel);
     const savedLevel = parseInt(localStorage.getItem("maze_saved_level") || "0", 10);
     loadLevel(savedLevel);
   </script>
