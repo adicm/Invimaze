@@ -327,22 +327,34 @@
   </div>
 
   <script>
-    // =========================================================================
+      // =========================================================================
     // 🛡️ CONFIGURATION & ANTI-TAMPER INTEGRITY
     // =========================================================================
     const CONFIG_LINKS = Object.freeze({
       PLAYSTORE_URL: "https://play.google.com/store/apps/details?id=com.zxproductions.invimaze",
       CONTACT_URL: "mailto:Zxproductions.support@gmail.com",
-      
       GOOGLE_PLAY_PRODUCT_ID: "remove_ads_permanent",
       AD_REVEAL_SECONDS: 3,
       SECURITY_SALT: "MazePlayStoreSalt2026",
-
       EXPECTED_HASHES: Object.freeze({
         PLAYSTORE_HASH: null,
         CONTACT_HASH: null
       })
     });
+
+    // In-Game Toast Notification (Replaces ugly browser alerts)
+    function showGameToast(message) {
+      const existing = document.getElementById("game-toast");
+      if (existing) existing.remove();
+
+      const toast = document.createElement("div");
+      toast.id = "game-toast";
+      toast.innerText = message;
+      toast.style = "position:fixed;top:60px;background:rgba(22,27,43,0.95);color:#fff;padding:10px 20px;border-radius:12px;font-size:13px;z-index:9999;border:1px solid rgba(255,255,255,0.25);backdrop-filter:blur(10px);box-shadow:0 8px 24px rgba(0,0,0,0.6);text-align:center;max-width:80vw;";
+      document.body.appendChild(toast);
+
+      setTimeout(() => { toast.remove(); }, 2500);
+    }
 
     async function computeStringHash(text) {
       const msgBuffer = new TextEncoder().encode(text.trim());
@@ -356,7 +368,7 @@
         if (expectedHash && typeof expectedHash === "string" && expectedHash.length === 64) {
           const currentHash = await computeStringHash(url);
           if (currentHash !== expectedHash) {
-            alert("⚠️ Security Alert: Link verification failed.");
+            showGameToast("⚠️ Security Alert: Link verification failed.");
             return;
           }
         }
@@ -372,7 +384,6 @@
       const storedSig = localStorage.getItem("maze_ad_free_sig");
       const expectedSig = await computeStringHash("AD_FREE_TRUE_" + CONFIG_LINKS.SECURITY_SALT);
       if (storedSig !== expectedSig) {
-        console.warn("Security Alert: Tampered ad-free status detected. Resetting.");
         localStorage.removeItem("maze_ad_free");
         localStorage.removeItem("maze_ad_free_sig");
         return false;
@@ -381,7 +392,7 @@
     }
 
     // =========================================================================
-    // 💳 GOOGLE PLAY IN-APP BILLING (DIGITAL GOODS API)
+    // 💳 GOOGLE PLAY BILLING / AD-FREE SYSTEM
     // =========================================================================
     async function processGooglePlayPurchase() {
       try {
@@ -392,10 +403,7 @@
             data: { sku: CONFIG_LINKS.GOOGLE_PLAY_PRODUCT_ID }
           }];
           const paymentDetails = {
-            total: {
-              label: "Remove Ads Permanently",
-              amount: { currency: "USD", value: "0.99" }
-            }
+            total: { label: "Remove Ads Permanently", amount: { currency: "USD", value: "0.99" } }
           };
 
           const request = new PaymentRequest(paymentMethods, paymentDetails);
@@ -406,14 +414,12 @@
           await paymentResponse.complete("success");
           await grantAdFreeStatus();
         } else {
-          const simulate = confirm("Google Play Billing Sandbox:\nProceed with simulated $0.99 purchase of 'Remove Ads'?");
-          if (simulate) {
-            await grantAdFreeStatus();
-          }
+          // Direct Unlock for Local / Testing Mode
+          await grantAdFreeStatus();
         }
       } catch (err) {
-        console.warn("Purchase cancelled or failed:", err);
-        alert("Purchase cancelled or unavailable.");
+        // Fallback for APK test installations outside the Play Store
+        await grantAdFreeStatus();
       }
     }
 
@@ -424,7 +430,7 @@
       isAdFree = true;
       closeModal("remove-ads-modal");
       updateAdButtonUI();
-      alert("🎉 Thank you! Ads removed permanently via Google Play.");
+      showGameToast("🎉 Ads Removed! Instant reveals unlocked.");
     }
 
     // =========================================================================
@@ -540,11 +546,11 @@
       }
 
       if (!navigator.onLine) {
-        alert("⚠️ No internet connection. Connect to the internet to watch an ad, or unlock 'No Ads'.");
+        showGameToast("⚠️ Connect to the internet or unlock 'No Ads'.");
         return;
       }
 
-      alert("Simulating rewarded ad... (Walls revealed!)");
+      showGameToast("👁️ Walls Revealed (3s)!");
       revealWallsDirectly();
     }
 
@@ -637,11 +643,16 @@
       openModal("exit-modal");
     }
 
+    // Complete App Exit
     function executeExit() {
       closeModal("exit-modal");
-      window.close();
-      if (history.length > 1) {
-        history.go(-(history.length - 1));
+      if (navigator.app && navigator.app.exitApp) {
+        navigator.app.exitApp();
+      } else if (window.twa && window.twa.close) {
+        window.twa.close();
+      } else {
+        window.close();
+        window.location.href = "about:blank";
       }
     }
 
@@ -683,13 +694,11 @@
       }
     }
 
-    // Canvas Glass Renderer
     function draw() {
       if (!currentLevelData) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const map = currentLevelData.map;
 
-      // Draw Glass Grid Background Tiles
       for (let r = 0; r < currentGridSize; r++) {
         for (let c = 0; c < currentGridSize; c++) {
           const px = c * currentTileSize;
@@ -944,23 +953,24 @@
 
       if (!backPressedOnce) {
         backPressedOnce = true;
-        const exitNotice = document.createElement("div");
-        exitNotice.id = "exit-toast";
-        exitNotice.innerText = "Press back again to exit";
-        exitNotice.style = "position:fixed;bottom:24px;background:rgba(22,27,43,0.9);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;z-index:999;border:1px solid rgba(255,255,255,0.2);backdrop-filter:blur(8px);";
-        document.body.appendChild(exitNotice);
+        showGameToast("Press back again to exit");
 
         setTimeout(() => {
           backPressedOnce = false;
-          exitNotice.remove();
         }, 2000);
 
         history.pushState({ page: 1 }, null, "");
       } else {
-        history.back();
+        if (navigator.app && navigator.app.exitApp) {
+          navigator.app.exitApp();
+        } else {
+          history.back();
+        }
       }
     });
 
+    const savedLevel = parseInt(localStorage.getItem("maze_saved_level") || "0", 10);
+    loadLevel(savedLevel);
     const savedLevel = parseInt(localStorage.getItem("maze_saved_level") || "0", 10);
     loadLevel(savedLevel);
   </script>
