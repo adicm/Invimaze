@@ -172,7 +172,7 @@
     .warning-btn { background: #4a5568; color: #fff; }
     .warning-btn:active { background: #374151; }
 
-    /* Victory Modal Styling */
+    /* Victory Modal Animations */
     .trophy-badge {
       font-size: 55px;
       animation: pulseGlow 1.8s infinite alternate ease-in-out;
@@ -264,7 +264,7 @@
     </div>
   </div>
 
-  <!-- Grand Victory Modal (Level 50 Cleared) -->
+  <!-- Grand Victory Modal -->
   <div id="victory-modal" class="modal">
     <div class="modal-box" style="border-color: #ffd700; box-shadow: 0 0 35px rgba(255, 215, 0, 0.4);">
       <div class="confetti-container" id="confetti-box"></div>
@@ -390,12 +390,16 @@
       const adBtn = document.getElementById("ad-btn");
       const removeAdsBtn = document.getElementById("remove-ads-btn");
       if (isAdFree) {
-        adBtn.innerText = "👁️ Instant Reveal";
-        adBtn.style.background = "linear-gradient(135deg, rgba(46, 196, 182, 0.9), rgba(32, 150, 140, 0.8))";
+        if (adBtn) {
+          adBtn.innerText = "👁️ Instant Reveal";
+          adBtn.style.background = "linear-gradient(135deg, rgba(46, 196, 182, 0.9), rgba(32, 150, 140, 0.8))";
+        }
         if (removeAdsBtn) removeAdsBtn.style.display = "none";
       } else {
-        adBtn.innerText = "📺 Reveal (Ad)";
-        adBtn.style.background = "linear-gradient(135deg, rgba(255, 152, 0, 0.9), rgba(230, 137, 0, 0.8))";
+        if (adBtn) {
+          adBtn.innerText = "📺 Reveal (Ad)";
+          adBtn.style.background = "linear-gradient(135deg, rgba(255, 152, 0, 0.9), rgba(230, 137, 0, 0.8))";
+        }
         if (removeAdsBtn) removeAdsBtn.style.display = "inline-block";
       }
     }
@@ -431,6 +435,7 @@
 
     function spawnConfetti() {
       const box = document.getElementById("confetti-box");
+      if (!box) return;
       box.innerHTML = "";
       const colors = ["#ffd700", "#00ff55", "#3a86ff", "#ff007f", "#00f0ff", "#ffbe0b"];
       for (let i = 0; i < 35; i++) {
@@ -485,7 +490,6 @@
       loadLevel(0);
     }
 
-    // Force Quit Handler for Android APK & PWA wrappers
     function executeExit() {
       closeModal("settings-modal");
       try {
@@ -499,17 +503,16 @@
         }
       } catch (e) {}
 
-      // Fallback: drain history and force close
       window.close();
       if (history.length > 1) {
-        history.go(-(history.length));
+        history.go(-history.length);
       } else {
         window.location.href = "about:blank";
       }
     }
 
     function movePlayer(dx, dy) {
-      if (isLocked || isLevelComplete) return;
+      if (isLocked || isLevelComplete || !currentLevelData) return;
 
       const newX = player.x + dx;
       const newY = player.y + dy;
@@ -554,4 +557,187 @@
           const px = c * currentTileSize;
           const py = r * currentTileSize;
 
-          ctx.fillStyle = "rgba(255, 25
+          ctx.fillStyle = "rgba(255, 255, 255, 0.02)";
+          ctx.fillRect(px + 1, py + 1, currentTileSize - 2, currentTileSize - 2);
+
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(px, py, currentTileSize, currentTileSize);
+
+          if (map[r][c] === 1 && showWalls) {
+            const wallX = px + 2, wallY = py + 2, wallSize = currentTileSize - 4;
+            const wallGrad = ctx.createLinearGradient(wallX, wallY, wallX + wallSize, wallY + wallSize);
+            wallGrad.addColorStop(0, "rgba(255, 60, 80, 0.85)");
+            wallGrad.addColorStop(1, "rgba(180, 20, 40, 0.7)");
+            ctx.fillStyle = wallGrad;
+            ctx.fillRect(wallX, wallY, wallSize, wallSize);
+
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(wallX, wallY, wallSize, wallSize);
+          } else if (map[r][c] === 2) {
+            const goalX = px + 3, goalY = py + 3, goalSize = currentTileSize - 6;
+            ctx.shadowColor = "#00ff55";
+            ctx.shadowBlur = 14;
+            ctx.fillStyle = "#00ff55";
+            ctx.fillRect(goalX, goalY, goalSize, goalSize);
+            ctx.shadowBlur = 0;
+
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(goalX, goalY, goalSize, goalSize);
+          }
+        }
+      }
+
+      const ballX = player.x * currentTileSize + currentTileSize / 2;
+      const ballY = player.y * currentTileSize + currentTileSize / 2;
+      const radius = currentTileSize / 3.2;
+
+      ctx.shadowColor = playerColor;
+      ctx.shadowBlur = 12;
+      ctx.beginPath();
+      ctx.arc(ballX, ballY, radius, 0, Math.PI * 2);
+      ctx.fillStyle = playerColor;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp" || e.key === "w") movePlayer(0, -1);
+      if (e.key === "ArrowDown" || e.key === "s") movePlayer(0, 1);
+      if (e.key === "ArrowLeft" || e.key === "a") movePlayer(-1, 0);
+      if (e.key === "ArrowRight" || e.key === "d") movePlayer(1, 0);
+    });
+
+    let touchStartX = 0, touchStartY = 0;
+    canvas.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+    });
+
+    canvas.addEventListener("touchend", (e) => {
+      const diffX = e.changedTouches[0].screenX - touchStartX;
+      const diffY = e.changedTouches[0].screenY - touchStartY;
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX > 25) movePlayer(1, 0);
+        else if (diffX < -25) movePlayer(-1, 0);
+      } else {
+        if (diffY > 25) movePlayer(0, 1);
+        else if (diffY < -25) movePlayer(0, -1);
+      }
+    });
+
+    function openModal(id) { 
+      const el = document.getElementById(id);
+      if (el) el.classList.add("active"); 
+    }
+    function closeModal(id) { 
+      const el = document.getElementById(id);
+      if (el) el.classList.remove("active"); 
+    }
+    function toggleHaptic(val) { hapticEnabled = val; }
+    function setPlayerColor(color) {
+      playerColor = color;
+      localStorage.setItem("maze_player_color", color);
+      draw();
+    }
+
+    let audioCtx = null;
+    function initAudioContext() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+    }
+
+    function playStepSound() {
+      initAudioContext();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.05);
+    }
+
+    function playWallHitSound() {
+      initAudioContext();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(90, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.15);
+    }
+
+    function playGobbleSound() {
+      initAudioContext();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.2);
+    }
+
+    function playVictoryFanfare() {
+      initAudioContext();
+      const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.12);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime + idx * 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + idx * 0.12 + 0.5);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + idx * 0.12);
+        osc.stop(audioCtx.currentTime + idx * 0.12 + 0.5);
+      });
+    }
+
+    let isMusicPlaying = false;
+    function toggleMusicButton() {
+      initAudioContext();
+      if (!isMusicPlaying) {
+        isMusicPlaying = true;
+        document.getElementById("music-toggle-btn").innerText = "🎵 BGM: ON";
+      } else {
+        isMusicPlaying = false;
+        document.getElementById("music-toggle-btn").innerText = "🎵 BGM: OFF";
+      }
+    }
+
+    history.pushState({ page: 1 }, null, "");
+    let backPressedOnce = false;
+    window.addEventListener("popstate", () => {
+      const activeModal = document.querySelector(".modal.active");
+      if (activeModal) {
+        activeModal.classList.remove("active");
+        history.pushState({ page: 1 }, null, "");
+        return;
+      }
+      if (!backPressedOnce) {
+        backPressedOnce = true;
+        showGameToast("Press back again to exit");
+        setTimeout(() => { backPressedOnce = false; }, 2000);
+        history.pushState({ page: 1 }, null, "");
+      } else {
+        executeExit();
+      }
+    });
+
+    const savedLevel = parseInt(localStorage.getItem("maze_saved_level") || "0", 10);
+    loadLevel(savedLevel);
+  </script>
+</body>
+</html>
